@@ -1,0 +1,56 @@
+package com.users.Users.controllers;
+
+import com.users.Users.models.Usuario;
+import com.users.Users.repository.Repository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+public class Controller {
+
+    @Autowired
+    private Repository repo;
+
+    @GetMapping()
+    public String index(){
+        return "Conectado";
+    }
+
+    @GetMapping("usuarios")
+    public List<Usuario> getUsuario(){
+        return repo.findAll();
+    }
+
+    @PostMapping("guardar")
+    public String save(@RequestBody Usuario usuario){
+        repo.save(usuario);
+        return "Guardado";
+    }
+
+    @PutMapping("editar/{id}")
+    public String update(@PathVariable Long id, @RequestBody Usuario usuario){
+        Usuario updateUsuario = repo.findById(id).get();
+        updateUsuario.setNombre(usuario.getNombre());
+        updateUsuario.setTelefono(usuario.getTelefono());
+        repo.save(updateUsuario);
+        return "Editado";
+    }
+
+    @DeleteMapping("delete/{id}")
+    public String delete(@PathVariable Long id ) {
+        Usuario deleteUsuario = repo.findById(id).get();
+        repo.delete(deleteUsuario);
+        return "Usuario eliminado";
+    }
+
+    @GetMapping("usuarios/{id}")
+    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+        Optional<Usuario> usuario = repo.findById(id);
+        return usuario.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+}
