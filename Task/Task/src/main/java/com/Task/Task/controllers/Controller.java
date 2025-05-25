@@ -81,8 +81,8 @@ public class Controller {
 
     }
 
-    @GetMapping("tareas/completadas")
-    public List<Tarea> getTareasPorEstado(@RequestParam boolean estado) {
-        return repo.findByCompletada(estado);
+    @GetMapping("tareas/user/{id}")
+    public List<Tarea> getTareasPorUsuario(@PathVariable Long id) {
+        return repo.findByUsuarioId(id);
     }
 }

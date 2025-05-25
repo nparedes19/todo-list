@@ -22,4 +22,14 @@ public class Usuario {
     @Getter
     @Setter
     private String telefono;
+
+    @Column
+    @Getter
+    @Setter
+    private String correo;
+
+    @Column
+    @Getter
+    @Setter
+    private String contraseña;
 }

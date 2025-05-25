@@ -3,10 +3,12 @@ package com.users.Users.controllers;
 import com.users.Users.models.Usuario;
 import com.users.Users.repository.Repository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -59,5 +61,20 @@ public class Controller {
         Optional<Usuario> usuario = repo.findByTelefono(telefono);
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/login")
+    public String login(@RequestBody Map<String, String> loginData) {
+        String correo = loginData.get("correo");
+        String contraseña = loginData.get("contraseña");
+        Usuario usuario = repo.findByCorreo(correo).orElse(null);
+        if (usuario == null) {
+            return "El correo no existe";
+        }
+        if (usuario.getContraseña().equals(contraseña)) {
+            return "Login exitoso";
+        } else {
+            return "Contraseña incorrecta";
+        }
     }
 }
