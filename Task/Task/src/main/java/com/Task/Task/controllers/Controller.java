@@ -12,10 +12,11 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
-
+import java.util.Optional;
 
 
 @RestController
+
 public class Controller {
 
     @Autowired
@@ -37,7 +38,7 @@ public class Controller {
     @PostMapping("guardar")
     public ResponseEntity<String> save(@RequestBody Tarea tarea) {
         // Validar que el usuario exista
-        String url = "http://localhost:8081/usuarios/" + tarea.getUsuarioId();
+        String url = "http://USER-SERVICE/usuarios/" + tarea.getUsuarioId();
         System.out.println("Consultando usuario en: " + url);
 
         try {
@@ -70,5 +71,18 @@ public class Controller {
         repo.delete(deleteTarea);
 
         return "Tarea eliminada";
+    }
+
+    @GetMapping("tareas/{id}")
+    public ResponseEntity<Tarea> getTareaById(@PathVariable Long id){
+        Optional<Tarea> tarea = repo.findById((id));
+        return tarea.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+
+    }
+
+    @GetMapping("tareas/completadas")
+    public List<Tarea> getTareasPorEstado(@RequestParam boolean estado) {
+        return repo.findByCompletada(estado);
     }
 }

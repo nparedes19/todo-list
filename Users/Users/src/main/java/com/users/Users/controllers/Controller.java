@@ -53,4 +53,11 @@ public class Controller {
         return usuario.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @GetMapping("usuarios/telefono/{telefono}")
+    public ResponseEntity<Usuario> getUsuarioByTelefono(@PathVariable String telefono) {
+        Optional<Usuario> usuario = repo.findByTelefono(telefono);
+        return usuario.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 }
