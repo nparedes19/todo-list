@@ -52,15 +52,19 @@ public class Controller {
     @GetMapping("usuarios/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         Optional<Usuario> usuario = repo.findById(id);
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (usuario.isPresent()) {
+            return ResponseEntity.ok(usuario.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("usuarios/telefono/{telefono}")
     public ResponseEntity<Usuario> getUsuarioByTelefono(@PathVariable String telefono) {
         Optional<Usuario> usuario = repo.findByTelefono(telefono);
-        return usuario.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        if (usuario.isPresent()) {
+            return ResponseEntity.ok(usuario.get());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/login")

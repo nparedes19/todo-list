@@ -35,23 +35,19 @@ public class Controller {
         return repo.findAll();
     }
 
-    @PostMapping("guardar")
-    public ResponseEntity<String> save(@RequestBody Tarea tarea) {
-        // Validar que el usuario exista
+    @PostMapping("/guardar")
+    public ResponseEntity<String> guardarTarea(@RequestBody Tarea tarea) {
         String url = "http://USER-SERVICE/usuarios/" + tarea.getUsuarioId();
-        System.out.println("Consultando usuario en: " + url);
-
         try {
-            ResponseEntity<Usuario> response = restTemplate.getForEntity(url, Usuario.class);
-            if (response.getStatusCode().is2xxSuccessful()) {
-                repo.save(tarea);
-                return ResponseEntity.ok("Guardo la tarea");
-            }
-        } catch (HttpClientErrorException.NotFound e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Usuario no encontrado");
-        }
+            restTemplate.getForEntity(url, Usuario.class);
+            repo.save(tarea);
+            return ResponseEntity.ok("Tarea guardada correctamente");
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al guardar tarea");
+        } catch (HttpClientErrorException.NotFound e) {
+            return ResponseEntity.badRequest().body("Usuario no encontrado");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Error al guardar la tarea");
+        }
     }
 
     @PutMapping("editar/{id}")
@@ -74,11 +70,13 @@ public class Controller {
     }
 
     @GetMapping("tareas/{id}")
-    public ResponseEntity<Tarea> getTareaById(@PathVariable Long id){
-        Optional<Tarea> tarea = repo.findById((id));
-        return tarea.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-
+    public ResponseEntity<Tarea> getTareaById(@PathVariable Long id) {
+        Optional<Tarea> tarea = repo.findById(id);
+        if (tarea.isPresent()) {
+            return ResponseEntity.ok(tarea.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("tareas/user/{id}")
