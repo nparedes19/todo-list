@@ -38,6 +38,8 @@ public class Controller {
         Usuario updateUsuario = repo.findById(id).get();
         updateUsuario.setNombre(usuario.getNombre());
         updateUsuario.setTelefono(usuario.getTelefono());
+        updateUsuario.setContraseña(usuario.getContraseña());
+        updateUsuario.setCorreo(usuario.getCorreo());
         repo.save(updateUsuario);
         return "Editado";
     }
